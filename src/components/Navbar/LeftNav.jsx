@@ -88,12 +88,7 @@ function LeftNav() {
       }`}
     >
       <div className="nav-links">
-        <img
-          src={Logo}
-          alt="Logo"
-          className=" scale-75 rounded-3xl"
-          style={{ width: "80px" }}
-        />
+        <img src={Logo} alt="Logo" className=" scale-75 rounded-3xl" style={{ width: "80px" }} />
 
         <ul className={`ul ${menuOpen ? "show" : ""}`} ref={menuRef}>
           <li className="home">
@@ -162,7 +157,7 @@ function LeftNav() {
             <>
               <li>
                 <Link to="/register" onClick={handleClose}>
-                  SIGNUP
+                  REGISTER
                 </Link>
               </li>
               <li>
@@ -178,6 +173,16 @@ function LeftNav() {
           <Link to="/Profile" className="absolute right-5 bottom-3">
             <FaUserCircle color="grey" size={40} />
           </Link>
+        )}
+
+        {window.innerWidth <= 768 && (
+          <div className="menu-toggle" onClick={handleMenu}>
+            {menuOpen ? (
+              <MdClose size={30} onClick={handleClose} />
+            ) : (
+              <FiMenu size={30} />
+            )}
+          </div>
         )}
       </div>
     </nav>

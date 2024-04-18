@@ -195,7 +195,11 @@ function ProductDetails() {
         <div className="flex mr-40 ml-40 mt-20 mb-20 justify-items-center">
           <div className="">
             <img
-              src={`${BASE_URL}${product.image}`} // Correct template literal usage
+              src={
+                product.image
+                  ? `${BASE_URL}${product.image}`
+                  : "../../Assets/noimage.png"
+              } // Correct template literal usage
               alt={product.title}
               className="w-full h-full object-cover rounded-lg"
             />
