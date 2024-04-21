@@ -5,24 +5,11 @@ import { Link } from "react-router-dom";
 import { BASE_URL } from "../../Context/AuthContext";
 
 function SavedProducts() {
-  const [savedProducts, setSavedProducts] = useState([]);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredImage, setHoveredImage] = useState(null);
 
-  const getSavedProducts = async () => {
-    try {
-      const response = await fetch("https://fakestoreapi.com/products");
-      const data = await response.json();
-      setSavedProducts(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
-  useEffect(() => {
-    getSavedProducts();
-  }, []);
 
   const scrollContainer = (scrollValue) => {
     setScrollLeft(scrollLeft + scrollValue);
@@ -103,6 +90,7 @@ function SavedProducts() {
         >
           {savedProducts.map((product) => (
             <Link to={`/product/${product.id}`} key={product.id}>
+              console.log("product.id", product)
               <div
                 key={product.id}
                 className="w-64  rounded-lg p-2 mb-4 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer"

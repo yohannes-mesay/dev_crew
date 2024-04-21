@@ -13,6 +13,7 @@ import savedPostFetch from "../savedPost/savedPostFetch.jsx";
 import deletePost from "../savedPost/deletePost.jsx";
 import { useProduct } from "../../Context/ProductContext.jsx";
 import { useAuth } from "../../Context/AuthContext.jsx";
+import { useResetProjection } from "framer-motion";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -33,10 +34,9 @@ function ProductDetails() {
   const [review, setReview] = useState("");
   const { rater, reviewer, getReviews, getRatings } = useProduct();
   const { user } = useAuth();
-
+  const { savedProducts, setSavedProducts } = useProduct();
   const token = localStorage.getItem("token");
   let config = null;
-
   if (token) {
     config = {
       headers: {
@@ -47,20 +47,7 @@ function ProductDetails() {
   } else {
     console.error("Token not found in localStorage");
   }
-
-  const getproducts = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/product/0/save`, config);
-      console.log("res", response.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getproducts();
-  }, [product]);
-
+  console.log("savedState", saveState);
   useEffect(() => {
     fetch(`https://aguero.pythonanywhere.com/product/${id}`)
       .then((res) => res.json())
@@ -75,18 +62,37 @@ function ProductDetails() {
         const limitedRelated = related.slice(0, 20);
         setRelatedProducts(limitedRelated);
       });
-    fetch(
-      "https://random-data-api.com/api/v3/projects/e657498e-1ee1-4ec6-a8ed-ecfef7f0cc48?api_key=HF9K2pVV3eyFg790PkXc0w"
-    )
-      .then((response) => response.json())
-      .then((data) => setReviews(data.json_array));
   }, [id]);
+  const getproducts = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/product/0/save`, config);
+      const savedpro = response.data.map((each) => each.product.id);
+      const filtered = response.data.filter(
+        (each) => each.product.id === product.id
+      );
+      setSaveId(filtered[0].id);
+      console.log("savedpro", savedpro);
+      console.log("1");
+      console.log("proid", product.id);
+      if (savedpro.includes(product.id)) {
+        console.log("2");
+        setSaveState(true);
+      } else {
+        setSaveState(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getproducts();
+  }, [product]);
 
   useEffect(() => {
     async function fetchReviewsAndRatings() {
       const reviewsResponse = await getReviews(id);
       const ratingsResponse = await getRatings(id);
-
       const combinedData = reviewsResponse.map((review) => {
         const correspondingRating = ratingsResponse.find(
           (rating) =>
@@ -152,8 +158,9 @@ function ProductDetails() {
   // -------------------- Handling save click -------------
 
   const handleSaveState = () => {
+    const type = "product";
     if (saveState) {
-      deletePost(product, saveId, setSaveState);
+      deletePost(type, product, saveId, setSaveState);
     } else {
       savedPostFetch(product, setSaveId, setSaveState);
     }
@@ -182,11 +189,8 @@ function ProductDetails() {
     setReview("");
   }
 
-  const handleCallButtonClick = () => {
-    const generatedPhoneNumber = `+251${Math.random() < 0.5 ? "7" : "9"}${
-      Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000
-    }`;
-    setPhoneNumber(generatedPhoneNumber);
+  const handleCallButtonClick = (phoneNo) => {
+    setPhoneNumber(phoneNo);
   };
 
   return (
@@ -194,6 +198,7 @@ function ProductDetails() {
       <div className="p-8">
         <div className="flex mr-40 ml-40 mt-20 mb-20 justify-items-center">
           <div className="">
+            {console.log("product", product)}
             <img
               src={
                 product.image
@@ -223,7 +228,7 @@ function ProductDetails() {
             <p className="text-xl font-bold mb-14">Price: ${product.price}</p>
             <div className="flex">
               <button
-                onClick={handleCallButtonClick}
+                onClick={() => handleCallButtonClick(product.user.phone)}
                 className="bg-orange-400 hover:bg-white text-black font-bold py-4 px-10 rounded-xl mr-2 flex items-center"
               >
                 <Phone size={24} />

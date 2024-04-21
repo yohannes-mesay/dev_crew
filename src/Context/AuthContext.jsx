@@ -137,6 +137,7 @@ function AuthProvider({ children }) {
 
       return res.data;
     } catch (error) {
+      console.log("error", error.response);
       dispatch({
         type: "rejected",
         payload: "There is an error registering the user...",
@@ -161,9 +162,10 @@ function AuthProvider({ children }) {
       }
       return res.data.access;
     } catch (err) {
+      console.log("err", err.response);
       dispatch({
         type: "rejected",
-        payload: "Incorrect combination of username and password...",
+        payload: err.response?.data.detail||"Incorrect combination of username and password...",
       });
     } finally {
       dispatch({ type: "stopLoading" });

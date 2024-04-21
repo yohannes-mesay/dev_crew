@@ -8,24 +8,14 @@ import { useSaved } from "../../Context/SavedContext";
 import { BASE_URL } from "../../Context/AuthContext";
 
 function ProductsSaved() {
-  const [products, setproducts] = useState([]);
   const [services, setServices] = useState([]);
   const [events, setEvents] = useState([]);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredImage, setHoveredImage] = useState(null);
-  const [savedProducts, setSavedProducts] = useState([]);
-  const { getproducts, saveProduct } = useSaved();
-
-  useEffect(function () {
-    async function prodfetch() {
-      const prod = await getproducts();
-      setproducts(prod);
-    }
-    prodfetch();
-  }, []);
-
-  console.log(products);
+  const { getproducts, saveProduct, savedProducts, setSavedProducts } =
+    useSaved();
+  console.log("productssaved", savedProducts);
 
   const scrollContainer = (scrollValue) => {
     const scrollElement = document.getElementById("scroll-content");
@@ -46,8 +36,14 @@ function ProductsSaved() {
     setIsHovered(false);
     setHoveredImage(null);
   };
-
-  const toggleSaved = (productId) => {
+  // useEffect(function(){
+  //   async function setSaved(){
+  //     const saved = await saveProduct();
+  //     setSavedProducts(saved);
+  //   }
+  // },[])
+  const toggleSaved = (productId, savedId) => {
+    console.log("pro", productId);
     if (savedProducts.includes(productId)) {
       setSavedProducts(savedProducts.filter((id) => id !== productId));
     } else {
@@ -97,23 +93,22 @@ function ProductsSaved() {
         <span style={lineStyle}></span>
       </div>
 
-      {products.length !== 0 ? (
+      {savedProducts.length !== 0 ? (
         <div className="flex items-center justify-center space-x-4">
           <button
             className="px-4 py-2 "
             onClick={() => scrollContainer(-100)}
             style={scrollButtonStyle}
-          >
-            
-          </button>
+          ></button>
           <div
             id="scroll-content"
             className="flex overflow-x-scroll scroll-smooth scrollbar-hide space-x-6 relative"
             style={{ scrollBehavior: "smooth", scrollLeft: scrollLeft + "px" }}
           >
-            {products.map((each) => (
-              <Link to={`/product/${each.id}`} key={each.id}>
-                {console.log("primg", each.product.image)}
+            {savedProducts.map((each) => (
+              <Link to={`/product/${each.product.id}`} key={each.id}>
+                {console.log("product.id", each)}
+
                 <div
                   key={each.product.id}
                   className="w-64  rounded-xl p-2 mb-4 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer shadow-lg"
@@ -133,7 +128,14 @@ function ProductsSaved() {
                         alt={each.title}
                         className="w-full h-full object-cover rounded-lg"
                       />
-                      <div className="bg-white  rounded-full w-9 h-9 p-1 flex items-center justify-center absolute top-5 right-5 cursor-pointer	">
+                      <div
+                        onClick={(event) => {
+                          // event.stopPropagation();
+                          // event.preventDefault();
+                          toggleSaved(each.product.id);
+                        }}
+                        className="bg-white  rounded-full w-9 h-9 p-1 flex items-center justify-center absolute top-5 right-5 cursor-pointer	"
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="#000"
@@ -166,12 +168,10 @@ function ProductsSaved() {
             className="px-4 py-2 "
             onClick={() => scrollContainer(100)}
             style={scrollButtonStyle}
-          >
-            
-          </button>
+          ></button>
         </div>
       ) : (
-        <p>No saved products yet</p>
+        <p>No saved savedProducts yet</p>
       )}
     </div>
   );

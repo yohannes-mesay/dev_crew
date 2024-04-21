@@ -31,11 +31,7 @@ function ServiceDetails() {
         const limitedRelated = related.slice(0, 20);
         setRelatedServices(limitedRelated);
       });
-    fetch(
-      "https://random-data-api.com/api/v3/projects/e657498e-1ee1-4ec6-a8ed-ecfef7f0cc48?api_key=HF9K2pVV3eyFg790PkXc0w"
-    )
-      .then((response) => response.json())
-      .then((data) => setReviews(data.json_array));
+    
   }, [id]);
 
   const handleMouseEnter = (serviceId) => {

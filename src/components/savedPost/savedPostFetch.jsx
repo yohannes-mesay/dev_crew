@@ -24,7 +24,6 @@ const savedPostFetch = (product, setSaveId, setSaveState) => {
         {},
         config
       );
-      console.log(config);
       alert("Product Saved successfully");
       console.log("uploaded:", res);
 
