@@ -15,15 +15,12 @@ function ProductsSaved() {
   const [hoveredImage, setHoveredImage] = useState(null);
   const { getproducts, saveProduct, savedProducts, setSavedProducts } =
     useSaved();
-  console.log("productssaved", savedProducts);
 
   const scrollContainer = (scrollValue) => {
     const scrollElement = document.getElementById("scroll-content");
-    console.log("Scrolling...");
     if (scrollElement) {
       scrollElement.scrollLeft += scrollValue;
       setScrollLeft(scrollElement.scrollLeft);
-      console.log("scrollLeft:", scrollElement.scrollLeft);
     }
   };
 
@@ -43,7 +40,6 @@ function ProductsSaved() {
   //   }
   // },[])
   const toggleSaved = (productId, savedId) => {
-    console.log("pro", productId);
     if (savedProducts.includes(productId)) {
       setSavedProducts(savedProducts.filter((id) => id !== productId));
     } else {
@@ -107,7 +103,6 @@ function ProductsSaved() {
           >
             {savedProducts.map((each) => (
               <Link to={`/product/${each.product.id}`} key={each.id}>
-                {console.log("product.id", each)}
 
                 <div
                   key={each.product.id}

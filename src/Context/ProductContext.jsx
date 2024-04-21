@@ -176,10 +176,10 @@ function ProductProvider({ children }) {
     }
   }
 
-  async function getReviews(product_id) {
+  async function getReviews(product_id,type="product") {
     try {
       const res = await axios.get(
-        `${BASE_URL}/product/${product_id}/review`,
+        `${BASE_URL}/${type}/${product_id}/review`,
         config
       );
       if (!res) throw new Error("Errorn in getting reviews");
@@ -190,10 +190,10 @@ function ProductProvider({ children }) {
     }
   }
 
-  async function getRatings(product_id) {
+  async function getRatings(product_id,type="product") {
     try {
       const res = await axios.get(
-        `${BASE_URL}/product/${product_id}/rating`,
+        `${BASE_URL}/${type}/${product_id}/rating`,
         config
       );
       if (!res) throw new Error("Errorn in getting ratings");

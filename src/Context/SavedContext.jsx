@@ -13,6 +13,7 @@ const SavedContext = createContext();
 
 function SavedProvider({ children }) {
   const [savedProducts, setSavedProducts] = useState([]);
+  const [savedServices, setSavedServices] = useState([]);
   const token = localStorage.getItem("token");
   let config = null;
 
@@ -45,11 +46,19 @@ function SavedProvider({ children }) {
   const getServices = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/service/0/save`, config);
+     setSavedServices(response.data)
+     console.log("savedServices",response.data)
       return response.data;
     } catch (err) {
       console.error(err);
     }
   };
+  useEffect(
+    function () {
+      getServices();
+    },
+    [savedServices]
+  );
 
   const getEvents = async () => {
     try {
@@ -142,13 +151,15 @@ function SavedProvider({ children }) {
       setSaveState(false);
       return res.data;
     } catch (err) {
-      console.error(  `Error deleting ${type}:  `, err);
+      console.error(`Error deleting ${type}:  `, err);
     }
   }
 
   return (
     <SavedContext.Provider
       value={{
+        savedServices,
+        setSavedServices,
         savedProducts,
         deleteProduct,
         setSavedProducts,

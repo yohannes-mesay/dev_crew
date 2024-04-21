@@ -14,7 +14,7 @@ function EventDetails() {
   const [hoveredImage, setHoveredImage] = useState(null);
   const [savedEvents, setSavedEvents] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState("");
-   const BASE_URL = "https://aguero.pythonanywhere.com";
+  const BASE_URL = "https://aguero.pythonanywhere.com";
 
   useEffect(() => {
     fetch(`https://aguero.pythonanywhere.com/event/${id}`)
@@ -77,23 +77,20 @@ function EventDetails() {
     );
   }
 
-  const handleCallButtonClick = () => {
-    const generatedPhoneNumber = `+251${Math.random() < 0.5 ? "7" : "9"}${
-      Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000
-    }`;
-    setPhoneNumber(generatedPhoneNumber);
+  const handleCallButtonClick = (phoneNo) => {
+    setPhoneNumber(phoneNo);
   };
 
   return (
     <div>
       <div className="p-8 sm:p-8">
         <div className="flex mr-40 ml-40 mt-20 mb-20 justify-items-center">
-           <div className="">
+          <div className="">
             <img
-  src={`${BASE_URL}${event.image}`} // Correct template literal usage
-  alt={event.title}
-  className="w-full h-full object-cover rounded-lg"
-/>
+              src={`${BASE_URL}${event.image}`} // Correct template literal usage
+              alt={event.title}
+              className="w-full h-full object-cover rounded-lg"
+            />
           </div>
           <div className="w-full sm:w-1/2 pl-8 ml-0 sm:ml-20">
             <h3 className="text-xl font-ubuntu mb-0">{event.title}</h3>
@@ -111,10 +108,10 @@ function EventDetails() {
                 Description: {event.description}
               </p>
             </div>
-            
+
             <div className="flex">
-             <button
-                onClick={handleCallButtonClick}
+              <button
+                onClick={() => handleCallButtonClick(product.user.phone)}
                 className="bg-orange-400 hover:bg-white text-black font-bold py-4 px-10 rounded-xl mr-2 flex items-center"
               >
                 <Phone size={24} />
@@ -126,11 +123,10 @@ function EventDetails() {
               </button>
             </div>
             {phoneNumber && (
-                <p className="text-lg font-bold mt-2">Phone No: {phoneNumber}</p>
-              )}
+              <p className="text-lg font-bold mt-2">Phone No: {phoneNumber}</p>
+            )}
           </div>
         </div>
-        
 
         {/* Reviews Section */}
         <div className="mt-20">
@@ -155,10 +151,7 @@ function EventDetails() {
           </h2>
           <div className="flex flex-wrap justify-center  sm:grid-cols-2 space-x-6  space-y-6 relative p-4">
             {relatedEvents.map((relatedEvent) => (
-              <Link
-                to={`/Service/${relatedEvent.id}`}
-                key={relatedEvent.id}
-              >
+              <Link to={`/Service/${relatedEvent.id}`} key={relatedEvent.id}>
                 <div
                   key={relatedEvent.id}
                   className="w-64 rounded-xl p-2 mb-4 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer shadow-lg"
@@ -181,9 +174,7 @@ function EventDetails() {
 
                       {isHovered && hoveredImage === relatedEvent.id && (
                         <img
-                          src={
-                            isSaved(relatedEvent.id) ? savedIcon : saveIcon
-                          }
+                          src={isSaved(relatedEvent.id) ? savedIcon : saveIcon}
                           alt="Save"
                           style={saveIconStyle}
                           onClick={() => toggleSaved(relatedEvent.id)}
@@ -200,7 +191,6 @@ function EventDetails() {
                     <p className="text-gray-600 text-center">
                       {relatedEvent.event_date}
                     </p>
-        
                   </div>
                 </div>
               </Link>

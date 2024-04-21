@@ -13,46 +13,8 @@ function Topservices() {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredImage, setHoveredImage] = useState(null);
-  const [savedServices, setSavedServices] = useState([]);
-  const { getServices } = useSaved();
-  useEffect(function () {
-    async function prodfetch() {
-      const prod = await getServices();
-      setServices(prod);
-      console.log("prod", prod);
-    }
-    prodfetch();
-  }, []);
-  <div className="bg-white  rounded-full w-9 h-9 p-1 flex items-center justify-center absolute top-5 right-5 cursor-pointer	">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="#000"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="none"
-      className="w-6 h-6 "
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-      />
-    </svg>
-  </div>;
-  const getservices = async () => {
-    try {
-      const response = await axios.get(
-        "https://aguero.pythonanywhere.com/service/0/save "
-      );
-      setServices(response.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getservices();
-  }, []);
+  const { getServices, saveProduct, savedServices, setSavedServices } =
+    useSaved();
 
   const scrollContainer = (scrollValue) => {
     setScrollLeft(scrollLeft + scrollValue);
@@ -119,7 +81,7 @@ function Topservices() {
         <span style={lineStyle}></span>
       </div>
 
-      {services.length !== 0 ? (
+      {savedServices.length !== 0 ? (
         <div className="flex items-center justify-center space-x-4">
           <button
             className="px-4 py-2 "
@@ -133,8 +95,8 @@ function Topservices() {
             className="flex overflow-x-scroll scroll-smooth scrollbar-hide space-x-4 relative"
             style={{ scrollBehavior: "smooth", scrollLeft: scrollLeft + "px" }}
           >
-            {services.map((service) => (
-              <Link to={`/service/${service.id}`} key={service.id}>
+            {savedServices.map((service) => (
+              <Link to={`/service/${service.service.id}`} key={service.id}>
                 <div
                   key={service.id}
                   className="w-64 rounded-lg p-2 mb-4 mt-8 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer shadow-lg"
@@ -150,18 +112,33 @@ function Topservices() {
                   <div className="flex flex-col items-center relative">
                     <div className="w-64 h-64 overflow-hidden mb-2 relative rounded-lg">
                       <img
-                        src={`${BASE_URL}${service.image}`}
+                        src={`${BASE_URL}${service.service.image}`}
                         alt={service.title}
                         className="w-full h-full object-cover rounded-lg"
                       />
-                      {isHovered && hoveredImage === service.id && (
-                        <img
-                          src={isSaved(service.id) ? savedIcon : saveIcon}
-                          alt="Save"
-                          style={saveIconStyle}
-                          onClick={() => toggleSaved(service.id)}
-                        />
-                      )}
+                      <div
+                        onClick={(event) => {
+                          // event.stopPropagation();
+                          // event.preventDefault();
+                          toggleSaved(each.product.id);
+                        }}
+                        className="bg-white  rounded-full w-9 h-9 p-1 flex items-center justify-center absolute top-5 right-5 cursor-pointer	"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="#000"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="none"
+                          className="w-6 h-6 "
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                          />
+                        </svg>
+                      </div>
                     </div>
                     <p className="text-center mt-2 max-h-16 overflow-hidden whitespace-normal font-bold">
                       {service.title}

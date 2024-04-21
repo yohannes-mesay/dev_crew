@@ -27,7 +27,7 @@ const deletePost = (type, product, saveId, setSaveState) => {
         config
       );
       console.log(config);
-      alert(`${type} deleted successfully`);
+      alert(`${type} unsaved successfully`);
       console.log("deleted:", res);
 
       return res.data;

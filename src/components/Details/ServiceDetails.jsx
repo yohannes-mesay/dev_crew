@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Phone, BookmarkSimple, Star } from "phosphor-react";
+import { Phone, BookmarkSimple, Star, BookBookmark } from "phosphor-react";
 import ReviewsCard from "../Single/ReviewsCard";
 import saveIcon from "../../Assets/saveicon.png";
 import savedIcon from "../../Assets/savedicon.png";
 import StarRating from "../Rating/StarRating";
-import { BASE_URL } from "../../Context/AuthContext";
-
+import { BASE_URL, useAuth } from "../../Context/AuthContext";
+import { useProduct } from "../../Context/ProductContext.jsx";
+import axios from "axios";
+import savedPostFetch from "../savedPost/savedPostFetch.jsx";
+import deletePost from "../savedPost/deletePost.jsx";
+import { average } from "../../utilities.js";
 function ServiceDetails() {
   const { id } = useParams();
   const [service, setService] = useState(null);
@@ -15,7 +19,28 @@ function ServiceDetails() {
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredImage, setHoveredImage] = useState(null);
   const [savedServices, setSavedServices] = useState([]);
+  const [saveState, setSaveState] = useState(false);
+  const [saveId, setSaveId] = useState(0);
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  const { raterService, reviewerService, getReviews, getRatings } =
+    useProduct();
+  const { user } = useAuth();
+  const { savedProducts, setSavedProducts } = useProduct();
+  const token = localStorage.getItem("token");
+  let config = null;
+  if (token) {
+    config = {
+      headers: {
+        Authorization: `JWT ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+  } else {
+    console.error("Token not found in localStorage");
+  }
 
   useEffect(() => {
     fetch(`https://aguero.pythonanywhere.com/service/${id}`)
@@ -31,8 +56,60 @@ function ServiceDetails() {
         const limitedRelated = related.slice(0, 20);
         setRelatedServices(limitedRelated);
       });
-    
   }, [id]);
+
+  const getproducts = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/service/0/save/`, config);
+      const savedpro = response.data.map((each) => each.service.id);
+      const filtered = response.data.filter(
+        (each) => each.service.id === service.id
+      );
+      setSaveId(filtered[0].id);
+      console.log("savedpro", savedpro);
+      console.log("1");
+      console.log("proid", service.id);
+      if (savedpro.includes(service.id)) {
+        console.log("2");
+        setSaveState(true);
+      } else {
+        setSaveState(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getproducts();
+  }, [service]);
+
+  useEffect(() => {
+    async function fetchReviewsAndRatings() {
+      const type = "service";
+      const reviewsResponse = await getReviews(id, type);
+      const ratingsResponse = await getRatings(id, type);
+      const combinedData = reviewsResponse.map((review) => {
+        const correspondingRating = ratingsResponse.find(
+          (rating) =>
+            rating.user.first_name === review.user.first_name &&
+            rating.user.last_name === review.user.last_name
+        );
+        return {
+          id: review.id,
+          userName: `${review.user.first_name} ${review.user.last_name}`,
+          rating: correspondingRating ? correspondingRating.rate : 0,
+          review: review.review,
+        };
+      });
+
+      setReviews(combinedData);
+      console.log("rvs", reviews);
+    }
+
+    fetchReviewsAndRatings();
+  }, [id, getReviews, getRatings]);
+  console.log("rvs out", reviews);
 
   const handleMouseEnter = (serviceId) => {
     setIsHovered(true);
@@ -74,24 +151,55 @@ function ServiceDetails() {
     );
   }
 
-  const handleCallButtonClick = () => {
-    const generatedPhoneNumber = `+251${Math.random() < 0.5 ? "7" : "9"}${
-      Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000
-    }`;
-    setPhoneNumber(generatedPhoneNumber);
+  // -------------------- Handling save click -------------
+
+  const handleSaveState = () => {
+    const type = "service";
+    if (saveState) {
+      deletePost(type, service, saveId, setSaveState);
+    } else {
+      savedPostFetch(type, service, setSaveId, setSaveState);
+    }
+
+    console.log(saveId);
   };
+
+  //-----------------------End------------
+  async function handleRatingReview(e) {
+    e.preventDefault();
+
+    await raterService(id, rating);
+    await reviewerService(id, review);
+
+    setReviews((prevReviews) => [
+      ...prevReviews,
+      {
+        id: prevReviews.length + 1, // Generate a unique id for the new review
+        userName: `${user.first_name} ${user.last_name}`, // Assuming user info is available
+        rating: rating,
+        review: review,
+      },
+    ]);
+
+    setRating(0);
+    setReview("");
+  }
+
+  const handleCallButtonClick = (phoneNo) => {
+    setPhoneNumber(phoneNo);
+  };
+  const rate = reviews.map((data) => data.rating);
 
   return (
     <div>
       <div className="p-8 sm:p-8">
-       <div className="flex mr-40 ml-40 mt-20 mb-20 justify-items-center">
+        <div className="flex mr-40 ml-40 mt-20 mb-20 justify-items-center">
           <div className="">
             <img
-  src={`${BASE_URL}${service.image}`} // Correct template literal usage
-  alt={service.title}
-  className="w-full h-full object-cover rounded-lg"
-/>
-
+              src={`${BASE_URL}${service.image}`} // Correct template literal usage
+              alt={service.title}
+              className="w-full h-full object-cover rounded-lg"
+            />
           </div>
           <div className="w-full sm:w-1/2 pl-8 ml-0 sm:ml-20">
             <h3 className="text-xl font-ubuntu mb-0">{service.title}</h3>
@@ -102,7 +210,7 @@ function ServiceDetails() {
             )}
 
             <p className="text-[#f28424] text-2xl font-bold mb-4">
-              Rating: {service.rating}
+              Rating: {average(rate)}
             </p>
             <div className="description-wrapper w-110">
               <p className="text-sm font-light mb-4">
@@ -111,64 +219,82 @@ function ServiceDetails() {
             </div>
             <p className="text-xl font-bold mb-14">Price: ${service.price}</p>
             <div className="flex">
-             <button
-                onClick={handleCallButtonClick}
+              <button
+                onClick={() => handleCallButtonClick(service.user.phone)}
                 className="bg-orange-400 hover:bg-white text-black font-bold py-4 px-10 rounded-xl mr-2 flex items-center"
               >
                 <Phone size={24} />
                 <span>Call</span>
               </button>
-              <button className="bg-orange-400 hover:bg-white text-black font-bold py-4 px-10 rounded-xl ml-2 flex items-center">
-                <BookmarkSimple size={24} />
-                <span className="ml-2">Save</span>
-              </button>
+              {saveState ? (
+                <button
+                  className="bg-orange-400 hover:bg-orange-500 text-black font-bold py-4 px-10 rounded-xl ml-2 flex items-center"
+                  onClick={handleSaveState}
+                >
+                  <BookBookmark size={24} />
+                  <span className="ml-2">Saved</span>
+                </button>
+              ) : (
+                <button
+                  className="bg-orange-400 text-black font-bold py-4 px-10 rounded-xl ml-2 flex items-center"
+                  onClick={handleSaveState}
+                >
+                  <BookmarkSimple size={24} />
+                  <span className="ml-2">Save</span>
+                </button>
+              )}
             </div>
             {phoneNumber && (
-                <p className="text-lg font-bold mt-2">Phone No: {phoneNumber}</p>
-              )}
+              <p className="text-lg font-bold mt-2">Phone No: {phoneNumber}</p>
+            )}
           </div>
         </div>
 
-        {/* Rating Section */}
-        <div className="flex flex-col sm:flex-row justify-center sm:my-26 sm:mx-12 mx-8">
-          <div className="mb-8 sm:mr-20 flex flex-col justify-items-start">
-            <h2 className="text-[#B0B0B0] text-3xl font-ubuntu font-bold mb-1 mt-10">
-              Rate this Service
-            </h2>
-            <p className="text-[#B0B0B0] text-l font-ubuntu">
-              Tell others what you think about this service
-            </p>
-            <div className="flex justify-around  mt-8">
-              <StarRating size={60} />
+        <form onSubmit={handleRatingReview}>
+          {/* Rating Section */}
+
+          <div className="flex justify-center my-16 mx-8">
+            <div className="mr-20 flex flex-col justify-items-start">
+              <h2 className="text-[#fff] text-3xl font-ubuntu font-bold mb-1 mt-8">
+                Rate this service
+              </h2>
+              <p className="text-[#B0B0B0] text-l font-ubuntu">
+                Tell others what you think about this service
+              </p>
+              <div className="flex justify-around mt-8">
+                <StarRating size={60} onSetRating={setRating} />
+              </div>
+            </div>
+            <div className="flex flex-col justify-end ml-32 mt-8">
+              <textarea
+                onChange={(e) => setReview(e.target.value)}
+                className="border border-gray-900 rounded-md text-black p-2 resize-y w-96 h-40"
+                placeholder="Leave your review"
+              ></textarea>
+              <button className="bg-orange-400 hover:bg-white text-black font-bold py-2 px-2 rounded-xl mt-4 ml-64">
+                Submit
+              </button>
             </div>
           </div>
-          <div className="flex flex-col justify-end ml-0 sm:ml-32 mt-8 sm:mt-0">
-            <textarea
-              className="border border-gray-900 rounded-md p-2 resize-y text-black w-full sm:w-96 h-40  mb-4 sm:mb-0"
-              placeholder="Leave your review"
-            ></textarea>
-            <button className="bg-orange-400 hover:bg-white text-black font-bold py-2 px-2  rounded-xl mt-4 ml-64 sm:mt-8">
-              Submit
-            </button>
-          </div>
-        </div>
 
-        {/* Reviews Section */}
-        <div className="mt-20">
-          <h2 className="text-white text-3xl font-ubuntu font-bold mb-1">
-            Reviews
-          </h2>
-          <div className="flex overflow-x-scroll scrollbar-hide">
-            {reviews.map((review, index) => (
-              <ReviewsCard
-                key={index}
-                userName={review.userName}
-                rating={review.rating}
-                review={review.review}
-              />
-            ))}
+          {/* Reviews Section */}
+          <div className="mt-20">
+            <h2 className="text-gray-400 text-3xl font-ubuntu font-bold mb-1">
+              Reviews
+            </h2>
+            <div className="flex overflow-x-scroll">
+              {reviews.map((data, index) => (
+                <ReviewsCard
+                  key={index}
+                  userName={data.userName}
+                  rating={data.rating}
+                  review={data.review}
+                />
+              ))}
+              {console.log("rating in review", rating)}
+            </div>
           </div>
-        </div>
+        </form>
 
         {/* Related Section */}
         <div className="mt-20 ">

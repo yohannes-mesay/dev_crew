@@ -14,6 +14,7 @@ import deletePost from "../savedPost/deletePost.jsx";
 import { useProduct } from "../../Context/ProductContext.jsx";
 import { useAuth } from "../../Context/AuthContext.jsx";
 import { useResetProjection } from "framer-motion";
+import { average } from "../../utilities.js";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -126,6 +127,7 @@ function ProductDetails() {
   };
 
   const toggleSaved = (eventId) => {
+    //to make this work, deleteProduct should be place inside savedContext and accessed here
     if (savedEvents.includes(eventId)) {
       setSavedEvents(savedEvents.filter((id) => id !== eventId));
     } else {
@@ -162,7 +164,7 @@ function ProductDetails() {
     if (saveState) {
       deletePost(type, product, saveId, setSaveState);
     } else {
-      savedPostFetch(product, setSaveId, setSaveState);
+      savedPostFetch(type, product, setSaveId, setSaveState);
     }
 
     console.log(saveId);
@@ -192,7 +194,7 @@ function ProductDetails() {
   const handleCallButtonClick = (phoneNo) => {
     setPhoneNumber(phoneNo);
   };
-
+  const rate = reviews.map((data) => data.rating);
   return (
     <div>
       <div className="p-8">
@@ -218,7 +220,7 @@ function ProductDetails() {
             )}
 
             <p className="text-[#f28424] text-2xl font-bold mb-4">
-              Rating: {product.rating}
+              Rating: {average(rate)}
             </p>
             <div className="description-wrapper w-110">
               <p className="text-sm font-light mb-4">
