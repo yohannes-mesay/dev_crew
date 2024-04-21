@@ -140,8 +140,9 @@ import Loader from "../components/Loaders/Loader";
 import axios from "axios";
 const ProfilePage = () => {
   const [render, setRender] = useState({});
-  const [selectedPage, setSelectedPage] = useState("product");
+  const [selectedPage, setSelectedPage] = useState("");
   const { logout, user, isLoading, getUserFromToken } = useAuth();
+  const [start, setStart] = useState("check you posts here");
   const [data, setData] = useState({});
   const navigate = useNavigate();
   console.log("out", selectedPage);
@@ -229,7 +230,7 @@ const ProfilePage = () => {
               <p className="residence">Residence: AASTU</p>
               <a href="/">
                 <div
-                  className= " bg-orange-400 hover:bg-orange-500 text-black font-bold py-3 pl-28 rounded-xl mr-2 flex items-center"
+                  className=" bg-orange-400 hover:bg-orange-500 text-black font-bold py-3 pl-28 rounded-xl mr-2 flex items-center"
                   onClick={handleLogout}
                 >
                   <span className="ml-1 relativepr-2">Logout</span>
@@ -243,19 +244,28 @@ const ProfilePage = () => {
               <ul className="ul">
                 <li
                   className={selectedPage === "product" ? "active" : ""}
-                  onClick={() => handleClick("product")}
+                  onClick={() => {
+                    handleClick("product");
+                    setStart(false);
+                  }}
                 >
                   PRODUCTS
                 </li>
                 <li
                   className={selectedPage === "service" ? "active" : ""}
-                  onClick={() => handleClick("service")}
+                  onClick={() => {
+                    handleClick("service");
+                    setStart(false);
+                  }}
                 >
                   SERVICES
                 </li>
                 <li
                   className={selectedPage === "event" ? "active" : ""}
-                  onClick={() => handleClick("event")}
+                  onClick={() => {
+                    handleClick("event");
+                    setStart(false);
+                  }}
                 >
                   EVENTS
                 </li>
@@ -272,7 +282,9 @@ const ProfilePage = () => {
                   />
                 ))
               ) : (
-                <p>Loading...</p>
+                <p className=" font-bold text-gray-400">
+                  {start ? start : "Loading..."}
+                </p>
               )}
             </div>
           </div>
