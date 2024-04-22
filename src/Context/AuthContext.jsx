@@ -8,7 +8,7 @@ const initialState = {
   user: {},
   isLoading: false,
   isAuthenticated: false,
-  error: "",
+  error: {},
 };
 
 function reducer(state, action) {
@@ -52,7 +52,6 @@ function AuthProvider({ children }) {
     reducer,
     initialState
   );
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -140,7 +139,8 @@ function AuthProvider({ children }) {
       console.log("error", error.response);
       dispatch({
         type: "rejected",
-        payload: "There is an error registering the user...",
+        payload:
+          error.response.data || "There is an error registering the user...",
       });
     } finally {
       dispatch({ type: "stopLoading" });
@@ -165,7 +165,9 @@ function AuthProvider({ children }) {
       console.log("err", err.response);
       dispatch({
         type: "rejected",
-        payload: err.response?.data.detail||"Incorrect combination of username and password...",
+        payload:
+          err.response?.data.detail ||
+          "Incorrect combination of username and password...",
       });
     } finally {
       dispatch({ type: "stopLoading" });

@@ -29,8 +29,6 @@ function ProductProvider({ children }) {
         Authorization: `JWT ${token}`,
       },
     };
-  } else {
-    console.error("Token not found in localStorage");
   }
   async function uploadProduct(productData) {
     try {
@@ -176,7 +174,7 @@ function ProductProvider({ children }) {
     }
   }
 
-  async function getReviews(product_id,type="product") {
+  async function getReviews(product_id, type = "product") {
     try {
       const res = await axios.get(
         `${BASE_URL}/${type}/${product_id}/review`,
@@ -190,7 +188,7 @@ function ProductProvider({ children }) {
     }
   }
 
-  async function getRatings(product_id,type="product") {
+  async function getRatings(product_id, type = "product") {
     try {
       const res = await axios.get(
         `${BASE_URL}/${type}/${product_id}/rating`,

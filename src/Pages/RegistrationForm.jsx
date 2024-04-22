@@ -7,22 +7,21 @@ const RegistrationForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     profile: null,
-    first_name: "",
-    last_name: "",
-    email: "",
-    bio: "",
-    username: "",
-    password: "",
-    confirmPassword: "",
+    first_name: "dasa",
+    last_name: "dsa",
+    email: "qwert@gmail.com",
+    bio: "qerwewqe",
+    username: "yohannes1",
+    password: "123$qweR",
+    confirmPassword: "123$qweR",
     phone: "1234567890",
-    sex: "",
+    sex: "M",
   });
 
   const [formErrors, setFormErrors] = useState({
     email: "",
     phone: "",
   });
-
   const [passwordMatchError, setPasswordMatchError] = useState(false);
   const [passwordRestrictionError, setPasswordRestrictionError] =
     useState(false);
@@ -80,13 +79,13 @@ const RegistrationForm = () => {
 
       if (!registeredUser) {
         setIsError(true);
-        throw new error("Registration failed");
+        throw new Error("Registration failed");
       }
       if (registeredUser) {
         navigate("/");
       }
-    } catch (error) {
-      console.error("Registration error:", error);
+    } catch (err) {
+      console.error("Registration error:", err);
     }
     setLoading(false);
   };
@@ -118,6 +117,11 @@ const RegistrationForm = () => {
               accept="image/*"
               onChange={handleChange}
             />
+            {error.profile && (
+              <p className="text-red-500 text-xs italic mt-1">
+                {error.profile}
+              </p>
+            )}
             <div className="mb-4">
               <label
                 className="block text-gray-700 text-md font-semibold mb-2"
@@ -188,6 +192,9 @@ const RegistrationForm = () => {
                   {formErrors.email}
                 </p>
               )}
+              {error.email && (
+                <p className="text-red-500 text-xs italic">{error.email}</p>
+              )}
             </div>
             <div className="mb-4">
               <label
@@ -206,6 +213,9 @@ const RegistrationForm = () => {
                 onChange={handleChange}
                 required
               />
+              {error.bio && (
+                <p className="text-red-500 text-xs italic mt-1">{error.bio}</p>
+              )}
             </div>
             <div className="mb-4">
               <label
@@ -224,6 +234,11 @@ const RegistrationForm = () => {
                 onChange={handleChange}
                 required
               />
+              {error.username && (
+                <p className="text-red-500 text-xs italic mt-1">
+                  {error.username}
+                </p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -247,6 +262,11 @@ const RegistrationForm = () => {
                 <p className="text-red-500 text-xs italic mt-1">
                   Password must be at least 8 characters long and contain at
                   least one lowercase letter and one special character
+                </p>
+              )}
+              {error.password && (
+                <p className="text-red-500 text-xs italic mt-1">
+                  {error.password}
                 </p>
               )}
             </div>
@@ -297,6 +317,11 @@ const RegistrationForm = () => {
                   {formErrors.phone}
                 </p>
               )}
+              {error.phone && (
+                <p className="text-red-500 text-xs italic mt-1">
+                  {error.phone}
+                </p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -327,12 +352,13 @@ const RegistrationForm = () => {
                   />{" "}
                   Female
                 </label>
+                {error.sex && (
+                  <p className="text-red-500 text-xs italic mt-1">
+                    {error.sex}
+                  </p>
+                )}
               </div>
-              <span>
-                {isError ? (
-                  <p className=" text-red-400 text-xs">{error}</p>
-                ) : null}
-              </span>
+            
             </div>
             <p className="text-md text-gray-600 text-center mb-6">
               Already have an account?{" "}

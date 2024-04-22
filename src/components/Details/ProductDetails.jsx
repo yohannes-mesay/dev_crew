@@ -45,8 +45,6 @@ function ProductDetails() {
         "Content-Type": "application/json",
       },
     };
-  } else {
-    console.error("Token not found in localStorage");
   }
   console.log("savedState", saveState);
   useEffect(() => {

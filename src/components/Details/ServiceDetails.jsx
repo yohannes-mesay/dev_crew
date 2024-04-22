@@ -38,8 +38,6 @@ function ServiceDetails() {
         "Content-Type": "application/json",
       },
     };
-  } else {
-    console.error("Token not found in localStorage");
   }
 
   useEffect(() => {

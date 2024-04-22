@@ -24,8 +24,6 @@ function SavedProvider({ children }) {
         "Content-Type": "application/json", // Specify Content-Type header
       },
     };
-  } else {
-    console.error("Token not found in localStorage");
   }
   const getproducts = async () => {
     try {
@@ -46,8 +44,7 @@ function SavedProvider({ children }) {
   const getServices = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/service/0/save`, config);
-     setSavedServices(response.data)
-     console.log("savedServices",response.data)
+      setSavedServices(response.data);
       return response.data;
     } catch (err) {
       console.error(err);
