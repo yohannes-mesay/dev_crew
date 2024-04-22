@@ -25,7 +25,6 @@ const RegistrationForm = () => {
   const [passwordMatchError, setPasswordMatchError] = useState(false);
   const [passwordRestrictionError, setPasswordRestrictionError] =
     useState(false);
-  const [isError, setIsError] = useState(false);
   const { register, error, isLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const handleChange = (e) => {
