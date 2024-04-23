@@ -306,6 +306,7 @@ function ProductDetails() {
 
         {/* Related Section */}
         <div className="mt-20 ">
+          {console.log("related", relatedProducts)}
           <h2 className="text-white text-3xl font-ubuntu font-bold mb-1">
             Related Products
           </h2>
@@ -330,7 +331,7 @@ function ProductDetails() {
                   <div className="flex flex-col items-center relative">
                     <div className="w-64 h-64 overflow-hidden mb-2 relative rounded-lg">
                       <img
-                        src={relatedProduct.image}
+                        src={`${BASE_URL}${relatedProduct.image}`}
                         alt={relatedProduct.title}
                         className="w-full h-full object-cover rounded-lg"
                       />

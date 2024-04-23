@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Phone, BookmarkSimple } from "phosphor-react";
+import { Phone, BookmarkSimple, BookBookmark } from "phosphor-react";
 import ReviewsCard from "../Single/ReviewsCard";
 import saveIcon from "../../Assets/saveicon.png";
 import savedIcon from "../../Assets/savedicon.png";
-
+import savedPostFetch from "../savedPost/savedPostFetch";
+import deletePost from "../savedPost/deletePost";
+import axios from 'axios'
 function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
@@ -13,9 +15,22 @@ function EventDetails() {
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredImage, setHoveredImage] = useState(null);
   const [savedEvents, setSavedEvents] = useState([]);
+  const [saveState, setSaveState] = useState(false);
+  const [saveId, setSaveId] = useState(0);
   const [phoneNumber, setPhoneNumber] = useState("");
   const BASE_URL = "https://aguero.pythonanywhere.com";
 
+  const token = localStorage.getItem("token");
+  let config = null;
+  if (token) {
+    config = {
+      headers: {
+        Authorization: `JWT ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+  }
+  console.log("savedState", saveState);
   useEffect(() => {
     fetch(`https://aguero.pythonanywhere.com/event/${id}`)
       .then((res) => res.json())
@@ -24,18 +39,38 @@ function EventDetails() {
     fetch("https://aguero.pythonanywhere.com/event/")
       .then((res) => res.json())
       .then((data) => {
-        // Exclude the current product
+        // Exclude the current event
         const related = data.filter((event) => event.id !== parseInt(id));
-        // Limit the number of related products to display
+        // Limit the number of related events to display
         const limitedRelated = related.slice(0, 20);
         setRelatedEvents(limitedRelated);
       });
-    fetch(
-      "https://random-data-api.com/api/v3/projects/e657498e-1ee1-4ec6-a8ed-ecfef7f0cc48?api_key=HF9K2pVV3eyFg790PkXc0w"
-    )
-      .then((response) => response.json())
-      .then((data) => setReviews(data.json_array));
   }, [id]);
+  const getEvents = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/event/0/save`, config);
+      const savedpro = response.data.map((each) => each.event.id);
+      const filtered = response.data.filter(
+        (each) => each.event.id === event.id
+      );
+      setSaveId(filtered[0].id);
+      console.log("savedpro", savedpro);
+      console.log("1");
+      console.log("proid", event.id);
+      if (savedpro.includes(event.id)) {
+        console.log("2");
+        setSaveState(true);
+      } else {
+        setSaveState(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getEvents();
+  }, [event]);
 
   const handleMouseEnter = (eventId) => {
     setIsHovered(true);
@@ -48,6 +83,7 @@ function EventDetails() {
   };
 
   const toggleSaved = (eventId) => {
+    //to make this work, deleteevent should be place inside savedContext and accessed here
     if (savedEvents.includes(eventId)) {
       setSavedEvents(savedEvents.filter((id) => id !== eventId));
     } else {
@@ -76,7 +112,16 @@ function EventDetails() {
       </div>
     );
   }
+  const handleSaveState = () => {
+    const type = "event";
+    if (saveState) {
+      deletePost(type, event, saveId, setSaveState);
+    } else {
+      savedPostFetch(type, event, setSaveId, setSaveState);
+    }
 
+    console.log(saveId);
+  };
   const handleCallButtonClick = (phoneNo) => {
     setPhoneNumber(phoneNo);
   };
@@ -94,15 +139,7 @@ function EventDetails() {
           </div>
           <div className="w-full sm:w-1/2 pl-8 ml-0 sm:ml-20">
             <h3 className="text-xl font-ubuntu mb-0">{event.title}</h3>
-            {reviews.length > 6 && (
-              <p className="text-[#fff] text-sm py-3 font-light mb-16">
-                {reviews[6].userName}
-              </p>
-            )}
 
-            <p className="text-[#f28424] text-2xl font-bold mb-4">
-              Rating: {event.rating}
-            </p>
             <div className="description-wrapper w-110">
               <p className="text-sm font-light mb-4">
                 Description: {event.description}
@@ -111,16 +148,29 @@ function EventDetails() {
 
             <div className="flex">
               <button
-                onClick={() => handleCallButtonClick(product.user.phone)}
+                onClick={() => handleCallButtonClick(event.user.phone)}
                 className="bg-orange-400 hover:bg-white text-black font-bold py-4 px-10 rounded-xl mr-2 flex items-center"
               >
                 <Phone size={24} />
                 <span>Call</span>
               </button>
-              <button className="bg-orange-400 hover:bg-white text-black font-bold py-4 px-10 rounded-xl ml-2 flex items-center">
-                <BookmarkSimple size={24} />
-                <span className="ml-2">Save</span>
-              </button>
+              {saveState ? (
+                <button
+                  className="bg-orange-400 hover:bg-orange-500 text-black font-bold py-4 px-10 rounded-xl ml-2 flex items-center"
+                  onClick={handleSaveState}
+                >
+                  <BookBookmark size={24} />
+                  <span className="ml-2">Saved</span>
+                </button>
+              ) : (
+                <button
+                  className="bg-orange-400 text-black font-bold py-4 px-10 rounded-xl ml-2 flex items-center"
+                  onClick={handleSaveState}
+                >
+                  <BookmarkSimple size={24} />
+                  <span className="ml-2">Save</span>
+                </button>
+              )}
             </div>
             {phoneNumber && (
               <p className="text-lg font-bold mt-2">Phone No: {phoneNumber}</p>
@@ -129,20 +179,7 @@ function EventDetails() {
         </div>
 
         {/* Reviews Section */}
-        <div className="mt-20">
-          <h2 className="text-white text-3xl font-ubuntu font-bold mb-1">
-            Reviews
-          </h2>
-          <div className="flex overflow-x-scroll scrollbar-hide">
-            {reviews.map((review, index) => (
-              <ReviewsCard
-                key={index}
-                userName={review.userName}
-                review={review.review}
-              />
-            ))}
-          </div>
-        </div>
+
 
         {/* Related Section */}
         <div className="mt-20 ">
@@ -151,7 +188,7 @@ function EventDetails() {
           </h2>
           <div className="flex flex-wrap justify-center  sm:grid-cols-2 space-x-6  space-y-6 relative p-4">
             {relatedEvents.map((relatedEvent) => (
-              <Link to={`/Service/${relatedEvent.id}`} key={relatedEvent.id}>
+              <Link to={`/Event/${relatedEvent.id}`} key={relatedEvent.id}>
                 <div
                   key={relatedEvent.id}
                   className="w-64 rounded-xl p-2 mb-4 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer shadow-lg"

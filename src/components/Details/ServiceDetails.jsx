@@ -320,7 +320,7 @@ function ServiceDetails() {
                   <div className="flex flex-col items-center relative">
                     <div className="w-64 h-64 overflow-hidden mb-2 relative rounded-lg">
                       <img
-                        src={relatedService.image}
+                        src={`${BASE_URL}${relatedService.image}`}
                         alt={relatedService.title}
                         className="w-full h-full object-cover rounded-lg"
                       />

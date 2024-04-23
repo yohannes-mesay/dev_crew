@@ -6,35 +6,22 @@ import savedIcon from "../../Assets/savedicon.png";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../Context/AuthContext";
+import { useSaved } from "../../Context/SavedContext";
 
 function EventsSaved() {
   const [events, setEvents] = useState([]);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredImage, setHoveredImage] = useState(null);
-  const [savedEvents, setSavedEvents] = useState([]);
-
-  const getExploreEvents = async () => {
-    try {
-      const response = await axios.get(
-        "https://aguero.pythonanywhere.com/event/0/save"
-      );
-      setEvents(response.data);
-      console.log(events);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getExploreEvents();
-  }, []);
-
-  console.log(events);
+  const { getServices, saveevent, savedEvents, setSavedEvents } = useSaved();
+  console.log("savd", savedEvents);
 
   const scrollContainer = (scrollValue) => {
-    setScrollLeft(scrollLeft + scrollValue);
-    document.getElementById("scroll-content").scrollLeft += scrollValue;
+    const scrollElement = document.getElementById("scroll-content");
+    if (scrollElement) {
+      scrollElement.scrollLeft += scrollValue;
+      setScrollLeft(scrollElement.scrollLeft);
+    }
   };
 
   const handleMouseEnter = (eventId) => {
@@ -97,30 +84,29 @@ function EventsSaved() {
         <span style={lineStyle}></span>
       </div>
 
-      {events.length !== 0 ? (
+      {savedEvents.length !== 0 ? (
         <div className="flex items-center justify-center space-x-4">
           <button
             className="px-4 py-2 "
             onClick={() => scrollContainer(-100)}
             style={scrollButtonStyle}
-          >
-            <FaChevronLeft />
-          </button>
+          ></button>
           <div
             id="scroll-content"
-            className="flex overflow-x-scroll scroll-smooth scrollbar-hide space-x-4 relative"
+            className="flex overflow-x-scroll scroll-smooth scrollbar-hide space-x-6 relative"
             style={{ scrollBehavior: "smooth", scrollLeft: scrollLeft + "px" }}
           >
-            {events.map((event) => (
-              <Link to={`/event/${event.id}`} key={event.id}>
+            {savedEvents.map((each) => (
+              <Link to={`/event/${each.event.id}`} key={each.id}>
+
                 <div
-                  key={event.id}
-                  className="w-64 rounded-lg p-2 mb-4 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer shadow-lg"
-                  onMouseEnter={() => handleMouseEnter(event.id)}
+                  key={each.event.id}
+                  className="w-64  rounded-xl p-2 mb-4 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer shadow-lg"
+                  onMouseEnter={() => handleMouseEnter(each.event.id)}
                   onMouseLeave={handleMouseLeave}
                   style={{
                     backgroundColor:
-                      isHovered && hoveredImage === event.id
+                      isHovered && hoveredImage === each.event.id
                         ? "#E5E7EB"
                         : "white",
                   }}
@@ -128,28 +114,46 @@ function EventsSaved() {
                   <div className="flex flex-col items-center relative">
                     <div className="w-64 h-64 overflow-hidden mb-2 relative rounded-lg">
                       <img
-                        src={`${BASE_URL}${event.image}`}
-                        alt={event.title}
+                        src={`${BASE_URL}${each.event.image}`}
+                        alt={each.title}
                         className="w-full h-full object-cover rounded-lg"
                       />
-
-                      {isHovered && hoveredImage === event.id && (
-                        <img
-                          src={isSaved(event.id) ? savedIcon : saveIcon}
-                          alt="Save"
-                          style={saveIconStyle}
-                          onClick={() => toggleSaved(event.id)}
-                        />
-                      )}
+                      <div
+                        onClick={(event) => {
+                          // event.stopPropagation();
+                          // event.preventDefault();
+                          toggleSaved(each.event.id);
+                        }}
+                        className="bg-white  rounded-full w-9 h-9 p-1 flex items-center justify-center absolute top-5 right-5 cursor-pointer	"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="#000"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="none"
+                          className="w-6 h-6 "
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                          />
+                        </svg>
+                      </div>
                     </div>
                     <p className="text-center mt-2 max-h-16 overflow-hidden whitespace-normal font-bold">
-                      {event.title}
+                      {each.event.title}
                     </p>
-                    <p className="text-gray-600">
-                      Organizer: {event.organizer}{" "}
+                    <p className="text-gray-400">Data: {each.event.event_date} </p>
+                    <p className="text-gray-400 text-center">
+                      Time: {each.event.event_time}
                     </p>
-                    <p className="text-gray-600 text-center">
-                      {event.event_date}
+                    <p className="text-gray-400 text-center">
+                      Place: {each.event.event_place}
+                    </p>
+                    <p className="text-gray-400 text-center">
+                      Organizer: {each.event.organizer}
                     </p>
                   </div>
                 </div>
@@ -160,12 +164,10 @@ function EventsSaved() {
             className="px-4 py-2 "
             onClick={() => scrollContainer(100)}
             style={scrollButtonStyle}
-          >
-            <FaChevronRight />
-          </button>
+          ></button>
         </div>
       ) : (
-        <p> No saved event </p>
+        <p>No saved events yet</p>
       )}
     </div>
   );

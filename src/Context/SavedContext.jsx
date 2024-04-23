@@ -14,6 +14,7 @@ const SavedContext = createContext();
 function SavedProvider({ children }) {
   const [savedProducts, setSavedProducts] = useState([]);
   const [savedServices, setSavedServices] = useState([]);
+  const [savedEvents, setSavedEvents] = useState([]);
   const token = localStorage.getItem("token");
   let config = null;
 
@@ -60,11 +61,19 @@ function SavedProvider({ children }) {
   const getEvents = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/event/0/save`, config);
+      setSavedEvents(response.data);
+      console.log("savedEvents", response.data);
       return response.data;
     } catch (err) {
       console.error(err);
     }
   };
+  useEffect(
+    function () {
+      getEvents();
+    },
+    [savedEvents]
+  );
 
   const saveProduct = async (product) => {
     console.log("product.id", product.id);
@@ -155,6 +164,8 @@ function SavedProvider({ children }) {
   return (
     <SavedContext.Provider
       value={{
+        savedEvents,
+        setSavedEvents,
         savedServices,
         setSavedServices,
         savedProducts,
