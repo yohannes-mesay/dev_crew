@@ -10,7 +10,7 @@ function UpcomingEvents() {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoveredImage, setHoveredImage] = useState(null);
-   const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getExploreEvents = async () => {
@@ -41,9 +41,6 @@ function UpcomingEvents() {
     setIsHovered(false);
     setHoveredImage(null);
   };
-
- 
-  
 
   const lineStyle = {
     width: isHovered ? "35%" : "0%",
@@ -96,52 +93,51 @@ function UpcomingEvents() {
           className="flex overflow-x-scroll scroll-smooth scrollbar-hide space-x-4 relative"
           style={{ scrollBehavior: "smooth", scrollLeft: scrollLeft + "px" }}
         >
-           {loading ? (
-          <>
-            <Cardskeleton />
-            <Cardskeleton />
-            <Cardskeleton />
-        </>
-        ) : (
-          events.map((event) => (
-            <Link to={`/event/${event.id}`} key={event.id}>
-              {console.log("event", event)}
-              <div
-                key={event.id}
-                className="w-64 rounded-lg p-2 mb-4 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer shadow-lg"
-                onMouseEnter={() => handleMouseEnter(event.id)}
-                onMouseLeave={handleMouseLeave}
-                style={{
-                  backgroundColor:
-                    isHovered && hoveredImage === event.id
-                      ? "#E5E7EB"
-                      : "white",
-                }}
-              >
-                <div className="flex flex-col items-center relative">
-                  <div className="w-64 h-64 overflow-hidden mb-2 relative rounded-lg">
-                    <img
-                      src={`${BASE_URL}${event.image}`}
-                      alt={event.title}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-
-                    
+          {loading ? (
+            <>
+              <Cardskeleton />
+              <Cardskeleton />
+              <Cardskeleton />
+            </>
+          ) : (
+            events.map((event) => (
+              <Link to={`/event/${event.id}`} key={event.id}>
+                <div
+                  key={event.id}
+                  className="w-64 rounded-lg p-2 mb-4 relative hover:scale-110 hover:opacity-90 transition duration-300 ease-in-out cursor-pointer shadow-lg"
+                  onMouseEnter={() => handleMouseEnter(event.id)}
+                  onMouseLeave={handleMouseLeave}
+                  style={{
+                    backgroundColor:
+                      isHovered && hoveredImage === event.id
+                        ? "#E5E7EB"
+                        : "white",
+                  }}
+                >
+                  <div className="flex flex-col items-center relative">
+                    <div className="w-64 h-64 overflow-hidden mb-2 relative rounded-lg">
+                      <img
+                        src={`${BASE_URL}${event.image}`}
+                        alt={event.title}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                    <p
+                      className="text-center mt-2 max-h-16 overflow-hidden whitespace-normal font-bold"
+                      style={{ color: "#000" }}
+                    >
+                      {event.title}
+                    </p>
+                    <p className="text-gray-600">
+                      Organizer: {event.organizer}{" "}
+                    </p>
+                    <p className="text-gray-600 text-center">
+                      {event.event_date}
+                    </p>
                   </div>
-                  <p
-                    className="text-center mt-2 max-h-16 overflow-hidden whitespace-normal font-bold"
-                    style={{ color: "#000" }}
-                  >
-                    {event.title}
-                  </p>
-                  <p className="text-gray-600">Organizer: {event.organizer} </p>
-                  <p className="text-gray-600 text-center">
-                    {event.event_date}
-                  </p>
                 </div>
-              </div>
-            </Link>
-           ))
+              </Link>
+            ))
           )}
         </div>
         <button

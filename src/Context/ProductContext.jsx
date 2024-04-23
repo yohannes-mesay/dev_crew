@@ -68,7 +68,6 @@ function ProductProvider({ children }) {
 
   async function uploadEvent(eventData) {
     try {
-      console.log("eventData", eventData);
       const formData = new FormData();
       Object.entries(eventData).forEach(([key, value]) => {
         formData.append(key, value);

@@ -1,5 +1,13 @@
+import { Alert } from "@mui/material";
 import axios from "axios";
-import { createContext, useContext, useEffect, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
+import IntegrationNotistack from "../components/Snackbar/Snackbar";
 
 export const BASE_URL = "https://aguero.pythonanywhere.com";
 
@@ -48,10 +56,12 @@ function reducer(state, action) {
   }
 }
 function AuthProvider({ children }) {
+  const [successMessage, setSuccessMessage] = useState("");
   const [{ user, isAuthenticated, error, isLoading }, dispatch] = useReducer(
     reducer,
     initialState
   );
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -131,7 +141,7 @@ function AuthProvider({ children }) {
 
       //login ends
       if (res.data) {
-        alert("Registered successfully");
+        setSuccessMessage("Registered successfully");
       }
 
       return res.data;
@@ -158,7 +168,7 @@ function AuthProvider({ children }) {
       if (res.status === 200 && res.data.access) {
         localStorage.setItem("token", res.data.access);
         dispatch({ type: "login", payload: res.data.user });
-        alert("Logged in successfully");
+        setSuccessMessage("Logged in Successfully");
       }
       return res.data.access;
     } catch (err) {
@@ -190,13 +200,17 @@ function AuthProvider({ children }) {
         isAuthenticated,
         error,
         getUserFromToken,
+        setSuccessMessage
       }}
     >
+      {successMessage && (
+        <IntegrationNotistack successMessage={successMessage} />
+      )}
+   
       {children}
     </AuthContext.Provider>
   );
 }
-
 function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined)

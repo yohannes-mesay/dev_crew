@@ -88,7 +88,14 @@ function LeftNav() {
       }`}
     >
       <div className="nav-links">
-        <img src={Logo} alt="Logo" className=" scale-75 rounded-3xl" style={{ width: "80px" }} />
+        <Link to="/">
+          <img
+            src={Logo}
+            alt="Logo"
+            className=" scale-75 rounded-3xl"
+            style={{ width: "80px" }}
+          />
+        </Link>
 
         <ul className={`ul ${menuOpen ? "show" : ""}`} ref={menuRef}>
           <li className="home">

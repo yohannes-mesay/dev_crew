@@ -141,12 +141,13 @@ import axios from "axios";
 const ProfilePage = () => {
   const [render, setRender] = useState({});
   const [selectedPage, setSelectedPage] = useState("");
-  const { logout, user, isLoading, getUserFromToken } = useAuth();
+  const { logout, user, isLoading, getUserFromToken, setSuccessMessage } =
+    useAuth();
   const [start, setStart] = useState("check you posts here");
   const [data, setData] = useState({});
   const navigate = useNavigate();
   console.log("out", selectedPage);
-
+  setSuccessMessage(false);
   useEffect(
     function () {
       async function apiCall() {

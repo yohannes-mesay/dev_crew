@@ -62,7 +62,6 @@ function SavedProvider({ children }) {
     try {
       const response = await axios.get(`${BASE_URL}/event/0/save`, config);
       setSavedEvents(response.data);
-      console.log("savedEvents", response.data);
       return response.data;
     } catch (err) {
       console.error(err);
@@ -113,7 +112,6 @@ function SavedProvider({ children }) {
   };
 
   const saveEvent = async (event) => {
-    console.log("event.id", event.id);
     try {
       console.log(config);
       const res = await axios.post(
