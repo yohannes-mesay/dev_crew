@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import Loader from "../components/Loaders/Loader";
+import { useNetworkStatus } from "../components/hooks/useNetworkStatus";
 
 const RegistrationForm = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const RegistrationForm = () => {
     useState(false);
   const { register, error, isLoading } = useAuth();
   const [loading, setLoading] = useState(false);
+  const isOnline=useNetworkStatus();
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -102,6 +104,12 @@ const RegistrationForm = () => {
             <h2 className="text-2xl font-bold text-left mb-4">
               Registration Form
             </h2>
+            {!isOnline && (
+              <p className="text-center text-red-500">
+                Internet connection lost. Please check your connection and try
+                again.
+              </p>
+            )}
             <label
               className="block text-gray-700 text-md font-semibold mb-2"
               htmlFor="profile"
@@ -357,7 +365,6 @@ const RegistrationForm = () => {
                   </p>
                 )}
               </div>
-            
             </div>
             <p className="text-md text-gray-600 text-center mb-6">
               Already have an account?{" "}

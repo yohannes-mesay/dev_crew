@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import { useNetworkStatus } from "../components/hooks/useNetworkStatus";
 
 const SignInForm = () => {
   const [formData, setFormData] = useState({
@@ -8,8 +9,10 @@ const SignInForm = () => {
     password: "",
   });
   const [isError, setIsError] = useState(false);
+  const isOnline = useNetworkStatus(); // Use the custom hook to get network status
   const { login, error } = useAuth();
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -23,10 +26,9 @@ const SignInForm = () => {
     try {
       const res = await login(formData.username, formData.password);
       if (!res) {
-        console.log("er", error);
         setIsError(true);
       }
-      if(res){
+      if (res) {
         navigate("/");
       }
     } catch (err) {
@@ -39,6 +41,11 @@ const SignInForm = () => {
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
         Sign In
       </h2>
+      {!isOnline && (
+        <p className="text-center text-red-500">
+          Internet connection lost. Please check your connection and try again.
+        </p>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
@@ -74,7 +81,9 @@ const SignInForm = () => {
             required
           />
           <span>
-            {isError ? <p className=" text-red-400 text-xs">{error}</p> : null}
+            {isError && (
+              <p className=" text-red-400 text-xs">{error}</p>
+            )}
           </span>
         </div>
 
