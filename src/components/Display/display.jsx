@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { BASE_URL } from "../../Context/AuthContext";
 
 function display() {
   const [topRatedProducts, setTopRatedProducts] = useState([]);
@@ -79,7 +80,7 @@ function display() {
                 <div className="flex flex-col items-center relative">
                   <div className="w-64 h-64 overflow-hidden mb-2 relative rounded-lg">
                     <img
-                      src={product.image}
+                      src={`${BASE_URL}${product.image}`}
                       alt={product.title}
                       className="w-full h-full object-cover rounded-lg"
                     />

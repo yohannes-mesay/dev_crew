@@ -147,7 +147,7 @@ const ProfilePage = () => {
   const [data, setData] = useState({});
   const navigate = useNavigate();
   console.log("out", selectedPage);
-  setSuccessMessage(false);
+  // setSuccessMessage(false);
   useEffect(
     function () {
       async function apiCall() {

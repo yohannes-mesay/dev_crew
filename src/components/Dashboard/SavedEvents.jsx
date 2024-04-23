@@ -75,7 +75,7 @@ function SavedEvents() {
         <p
           className="inline-block relative group text-black"
           onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseLeave={handleMouseLeave} 
         >
           <span className="font-light text-lg text-black">Events</span>
           <br />

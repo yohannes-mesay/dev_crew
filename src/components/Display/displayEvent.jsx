@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 import axios from "axios";
-  
+import { BASE_URL } from "../../Context/AuthContext";
+
 function displayEvent() {
   const [events, setEvents] = useState([]);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -85,7 +86,7 @@ function displayEvent() {
                 <div className="flex flex-col items-center relative">
                   <div className="w-64 h-64 overflow-hidden mb-2 relative rounded-lg">
                     <img
-                      src={event.image}
+                      src={`${BASE_URL}${event.image}`}
                       alt={event.title}
                       className="w-full h-full object-cover rounded-lg"
                     />

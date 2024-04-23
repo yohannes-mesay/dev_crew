@@ -13,9 +13,11 @@ function TopProducts(props) {
 
   const getTopRatedProducts = async () => {
     try {
-      const response = await fetch("https://fakestoreapi.com/products");
-      const data = await response.json();
-      setTopRatedProducts(data);
+      const response = await axios.get(
+        "https://aguero.pythonanywhere.com/product/"
+      );
+      console.log(response.data); 
+      setTopRatedProducts(response.data);
     } catch (err) {
       console.error(err);
     }
