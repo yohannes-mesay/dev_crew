@@ -169,6 +169,9 @@ function AuthProvider({ children }) {
         localStorage.setItem("token", res.data.access);
         dispatch({ type: "login", payload: res.data.user });
         setSuccessMessage("Logged in Successfully");
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 5000);
       }
       return res.data.access;
     } catch (err) {
@@ -200,13 +203,13 @@ function AuthProvider({ children }) {
         isAuthenticated,
         error,
         getUserFromToken,
-        setSuccessMessage
+        setSuccessMessage,
       }}
     >
       {successMessage && (
         <IntegrationNotistack successMessage={successMessage} />
       )}
-   
+
       {children}
     </AuthContext.Provider>
   );
